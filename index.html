@@ -57,6 +57,8 @@
         .status-Em-andamento { background-color: #fef08a; } /* yellow-200 */
         .status-Concluído { background-color: #bbf7d0; } /* green-200 */
         .status-Contínuo { background-color: #bfdbfe; } /* blue-200 */
+        .status-Planejamento { background-color: #e9d5ff; } /* purple-200 */
+        .status-NA { background-color: #e5e7eb; } /* gray-200 */
     </style>
 </head>
 <body class="p-4 sm:p-6">
@@ -87,22 +89,12 @@
             <div id="plan-view" class="hidden">
                  <!-- Legenda -->
                 <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-6 p-4 bg-gray-50 rounded-lg">
-                    <div class="flex items-center">
-                        <span class="h-4 w-4 block rounded-full bg-red-200 mr-2 border border-red-300"></span>
-                        <span class="text-sm text-gray-700">A iniciar</span>
-                    </div>
-                    <div class="flex items-center">
-                        <span class="h-4 w-4 block rounded-full bg-yellow-200 mr-2 border border-yellow-300"></span>
-                        <span class="text-sm text-gray-700">Em andamento</span>
-                    </div>
-                    <div class="flex items-center">
-                        <span class="h-4 w-4 block rounded-full bg-green-200 mr-2 border border-green-300"></span>
-                        <span class="text-sm text-gray-700">Concluído</span>
-                    </div>
-                    <div class="flex items-center">
-                        <span class="h-4 w-4 block rounded-full bg-blue-200 mr-2 border border-blue-300"></span>
-                        <span class="text-sm text-gray-700">Contínuo</span>
-                    </div>
+                    <div class="flex items-center"><span class="h-4 w-4 block rounded-full bg-red-200 mr-2 border border-red-300"></span><span class="text-sm text-gray-700">A iniciar</span></div>
+                    <div class="flex items-center"><span class="h-4 w-4 block rounded-full bg-yellow-200 mr-2 border border-yellow-300"></span><span class="text-sm text-gray-700">Em andamento</span></div>
+                    <div class="flex items-center"><span class="h-4 w-4 block rounded-full bg-green-200 mr-2 border border-green-300"></span><span class="text-sm text-gray-700">Concluído</span></div>
+                    <div class="flex items-center"><span class="h-4 w-4 block rounded-full bg-blue-200 mr-2 border border-blue-300"></span><span class="text-sm text-gray-700">Contínuo</span></div>
+                    <div class="flex items-center"><span class="h-4 w-4 block rounded-full bg-purple-200 mr-2 border border-purple-300"></span><span class="text-sm text-gray-700">Planejamento</span></div>
+                    <div class="flex items-center"><span class="h-4 w-4 block rounded-full bg-gray-200 mr-2 border border-gray-300"></span><span class="text-sm text-gray-700">N/A</span></div>
                 </div>
                  <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
@@ -110,7 +102,8 @@
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoria</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ação Proposta</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Levantamento/Objetivo</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Objetivo</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Responsável</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prazo</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                             </tr>
@@ -156,39 +149,48 @@
     <script>
         // --- ESTRUTURA DE DADOS ---
         const planData = [
-            { id: 1, category: "Sistemas e Processos", action: "DFT – melhorias no sistema (Etapa 3 / SISDIP) • Transferência do conhecimento do SISDIP para todos os órgãos SIPEC. • Manual prático, sensibilização, capacitação e plantão de dúvidas. • Acompanhamento mensal do preenchimento dos dados em 2025. • Canal direto COEPE/MGI para sugestões de melhorias.", levantamento: "Dar clareza às opções do DFT e apoiar todos os órgãos SIPEC na utilização do SISDIP.", prazo: "2025-12-31", status: "Em andamento" },
-            { id: 2, category: "Sistemas e Processos", action: "PGD – reformulação geral do sistema PGD-e • API para envio de dados ao MGI já desenvolvida. • Entregas em desenvolvimento (DIGI/SGE). • Pontos de atenção: 34 evolutivas mapeadas pendentes.", levantamento: "Melhorar usabilidade, reduzir sobrecarga de alertas e ampliar funcionalidades estratégicas do PGD-e.", prazo: "2025-12-31", status: "Em andamento" },
-            { id: 3, category: "Sistemas e Processos", action: "Mapeamento dos formulários de solicitação de serviços • Opção 1: Mapear os formulários para identificar os serviços mais solicitados. • Opção 2: Adotar uma plataforma de mercado para gestão de serviços.", levantamento: "Melhorar o sistema de formulários para torná-lo mais inteligente, ágil e baseado em dados.", prazo: "2025-11-01", status: "A iniciar" },
-            { id: 4, category: "Gestão Institucional e Comunicação", action: "Aprimorar a divulgação das atividades da área de gestão de pessoas e promover a transparência dos processos.", levantamento: "A área de gestão de pessoas é pouco conhecida, com baixa visibilidade de suas ações e falta de comunicação sobre o andamento dos processos.", prazo: "2025-11-01", status: "A iniciar" },
-            { id: 5, category: "Gestão Institucional e Comunicação", action: "Revisar e fortalecer a comunicação institucional sobre ergonomia, via boletins, redes internas e treinamentos periódicos. Produção e oferta de microlearning com vídeos curtos.", levantamento: "Percepção de falta de atenção institucional, ausência de divulgação de políticas de ergonomia e demora no atendimento às demandas.", prazo: "2025-11-01", status: "Em andamento" },
-            { id: 6, category: "Infraestrutura", action: "Encaminhamento para as SADS para levantamento de infraestrutura", levantamento: "Melhorar o Conforto do ambiente de trabalho (salas, iluminação, equipamentos, etc).", prazo: "2025-11-01", status: "A iniciar" },
-            { id: 7, category: "Modalidade de Trabalho", action: "Na definição do novo % de Teletrabalho integral foram escutados todos os órgãos e associações, sendo acatado o pedido de aumento em 5% nas modalidades.", levantamento: "Pedido por maior flexibilidade na modalidade de trabalho e ampliação do teletrabalho.", prazo: "N/A", status: "Concluído" },
-            { id: 8, category: "Capacitação e Desenvolvimento Profissional", action: "Capacitação de líderes", levantamento: "Capacitar gestores para liderar remotamente, com foco em comunicação, gestão de desempenho e bem-estar da equipe.", prazo: "2025-06-30", status: "A iniciar" },
-            { id: 9, category: "Capacitação e Desenvolvimento Profissional", action: "Garantir tempo protegido para capacitação (ex.: 2h mensais oficiais) - Alterar Normativo interno + Preparar sistema + pactuação em planos de trabalho + Sensibilização", levantamento: "Equilibrar sobrecarga de trabalho e desenvolvimento, incentivando a participação em capacitações.", prazo: "2025-12-31", status: "A iniciar" },
-            { id: 10, category: "Valorização do Servidor e Carreira", action: "Atuação em conjunto com SGCS", levantamento: "Estruturar plano de carreira que valorize a titulação.", prazo: "N/A", status: "Contínuo" },
-            { id: 11, category: "Valorização do Servidor e Carreira", action: "Atuação em conjunto com SGCS", levantamento: "Criar incentivos financeiros e gratificações que motivem a busca por capacitação.", prazo: "N/A", status: "Contínuo" },
-            { id: 12, category: "Saúde, Qualidade de Vida e Bem-estar no Trabalho", action: "Campanhas de vacinação", levantamento: "Ampliar o acesso às campanhas de vacinação, descentralizando a oferta para além das capitais.", prazo: "N/A", status: "Contínuo" },
-            { id: 13, category: "Outros", action: "Atuação em conjunto com SGCS", levantamento: "Buscar alternativas para tornar o plano de saúde mais acessível aos servidores.", prazo: "N/A", status: "Contínuo" },
-            { id: 14, category: "Outros", action: "Avaliação da questão junto à CONJUR/MGI", levantamento: "Analisar a questão das férias de terceirizados na mudança de contrato para evitar a perda de direitos.", prazo: "2025-10-31", status: "Em andamento" },
-            { id: 15, category: "Outros", action: "Apoio à fiscalização dos contratos", levantamento: "Assegurar o cumprimento dos direitos dos terceirizados, incluindo férias e condições de trabalho.", prazo: "N/A", status: "Contínuo" },
-            { id: 16, category: "Outros", action: "Apresentação dos canais de denúncia (Ouvidoria)", levantamento: "Oferecer um canal seguro para relatar possíveis abusos ou excessos por parte de fiscais.", prazo: "N/A", status: "Contínuo" }
+            { id: 1, category: "Sistemas e Processos", action: "DFT – melhorias no sistema (Etapa 3 / SISDIP) • Transferência do conhecimento do SISDIP para todos os órgãos SIPEC. • Manual prático, sensibilização, capacitação e plantão de dúvidas. • Acompanhamento mensal do preenchimento dos dados em 2025. • Canal direto COEPE/MGI para sugestões de melhorias.", prazo: "2025 (execução contínua)", objetivo: "Dar clareza às opções do DFT e apoiar todos os órgãos SIPEC na utilização do SISDIP.", responsavel: "MGI / COEPE / DPRO", status: "Em andamento" },
+            { id: 2, category: "Sistemas e Processos", action: "PGD – reformulação geral do sistema PGD-e • API para envio de dados ao MGI já desenvolvida. • Entregas em desenvolvimento (DIGI/SGE): Planejamento Estratégico, Cadeia de Valor, PEE, PPI, TCR, Avaliação do PPI, Avaliação do PEE, Relatório de Resultados, API ao MGI. • Em homologação: Planejamento Estratégico, Cadeia de Valor, PEE, PPI, TCR, Avaliação do PPI. • A desenvolver: Avaliação do PEE, Relatório de Resultados, API ao MGI. • Pontos de atenção: 34 evolutivas mapeadas pendentes. • Suporte PGD incorporado ao AGU Serviços.", prazo: "2025 (execução por fases)", objetivo: "Melhorar usabilidade, reduzir sobrecarga de alertas e ampliar funcionalidades estratégicas do PGD-e.", responsavel: "DIGI/SGE / DPRO", status: "Em andamento" },
+            { id: 3, category: "Sistemas e Processos", action: "Mapeamento dos formulários de solicitação de serviços • Opção 1: disponibilizar em PDF para aposentados. • Opção 2: incluir modelos de requerimento no SUPER SAPIENS.", prazo: "2025", objetivo: "Garantir acessibilidade e padronização dos formulários de serviços.", responsavel: "DPRO", status: "Planejamento" },
+            { id: 4, category: "Comunicação e Serviços da DPRO", action: "Live específica sobre os serviços da DPRO", prazo: "A partir de Out/2025 e contínuo", objetivo: "Ampliar a divulgação e o entendimento sobre os serviços da DPRO, promovendo maior transparência e engajamento.", responsavel: "DPRO / ASCOM", status: "A iniciar" },
+            { id: 5, category: "Comunicação e Serviços da DPRO", action: "Pílulas de WhatsApp (plano de comunicação com a ASCOM)", prazo: "dez/25", objetivo: "Criar e implementar plano de comunicação em parceria com a ASCOM para envio de conteúdos curtos e informativos.", responsavel: "DPRO / ASCOM", status: "Planejamento" },
+            { id: 6, category: "Comunicação e Serviços da DPRO", action: "Revisão e atualização das páginas de serviço da DPRO (com apoio da FGV)", prazo: "dez/25", objetivo: "Melhorar a gestão do conhecimento e a manualização dos serviços ofertados.", responsavel: "DPRO / FGV", status: "Em andamento" },
+            { id: 7, category: "Acesso às oportunidades de Saúde, Qualidade de Vida e Bem-estar no Trabalho", action: "Ampliação do quadro de psicólogos, inclusive descentralizados • Implementação do Protocolo de Saúde Mental (capacitação de equipes, acolhimento emocional, oficinas de gestão de conflitos). • Rodas de conversa, apoio psicossocial, atendimento interdisciplinar e campanhas de conscientização. • Inclusão dos resultados da Pesquisa de Satisfação 2025 no processo decisório.", prazo: "A partir de Out/2025", objetivo: "Promover saúde mental, inclusão e apoio efetivo aos servidores.", responsavel: "DPRO / SGA", status: "Planejamento" },
+            { id: 8, category: "Acesso às oportunidades de Saúde, Qualidade de Vida e Bem-estar no Trabalho", action: "Estabelecer novas parcerias com operadoras de saúde com maior capilaridade nacional.", prazo: "mar/26", objetivo: "Ampliar o alcance das campanhas de vacinação para além das capitais, garantindo acesso mais equitativo.", responsavel: "DPRO / Operadoras de saúde", status: "Planejamento" },
+            { id: 9, category: "Capacitação e Desenvolvimento Profissional", action: "Melhorar o LNC (Levantamento de Necessidades de Capacitação) para identificar a modalidade adequada a cada necessidade", prazo: "nov/26", objetivo: "Adequar as modalidades dos cursos ofertados", responsavel: "DPRO/ESAGU", status: "Planejamento" },
+            { id: 10, category: "Capacitação e Desenvolvimento Profissional", action: "Implementar Capacitação de líderes para melhoria da gestão de prazos", prazo: "mar/25", objetivo: "Melhorar aspectos de percepção de qualidade de vid dos servidores como \"Recebimento de serviços no fim de semana com prazo para segunda\"", responsavel: "DPRO/ESAGU", status: "A iniciar" },
+            { id: 11, category: "Capacitação e Desenvolvimento Profissional", action: "Garantir tempo protegido para capacitação (ex.: 2h mensais oficiais) • Conforme consultoria PNUD sobre nova forma de Gestão de Desempenho: Alterar normativo interno + Preparar sistema + Pactuação em planos de trabalho + Sensibilização", prazo: "2026", objetivo: "Superar dificuldade identificada de \"Volume de serviço impede acompanhar atividades do Desenvolvimento Profissional\"", responsavel: "DPRO", status: "A iniciar" },
+            { id: 12, category: "Valorização do Servidor e Carreira", action: "Atuação em conjunto com SGCS", prazo: "2026", objetivo: "Demanda por plano de carreira com valorização da titulação", responsavel: "DPRO/SGA/SGCS", status: "Em andamento" },
+            { id: 13, category: "Valorização do Servidor e Carreira", action: "Desenvolver política de incentivos vinculada à valorização profissional (Identificação de Telntos dentro da AGU e oferta de GECC para disseminação do conhecimento, valorizando os talentos internos e ao mesmo tempo capacitando novos servidores)", prazo: "2026", objetivo: "Pedidos por incentivos financeiros, gratificações e estímulos que motivem servidores a buscar capacitação", responsavel: "DPRO/SGA/SGCS", status: "Planejamento" },
+            { id: 14, category: "Ergonomia", action: "Relançamento da cartilha de ergonomia em formato interativo, com vídeos e fotos, para facilitar ajustes autônomos pelos servidores. Realização da “Blitz da Ergonomia” com atendimentos presenciais voltados à identificação, correção e orientação nos postos de trabalho. Ampliação da comunicação institucional sobre ergonomia, via boletins, redes internas e treinamentos periódicos. Produção e oferta de microlearning com vídeos curtos (5 a 10 minutos) com pílulas de conhecimento ergonômico, acessíveis mesmo em rotinas sobrecarregadas. ", prazo: "nov/25", objetivo: "Percepção de falta de atenção institucional, ausência de divulgação de políticas de ergonomia e demora no atendimento às demandas. Sugestões para ações preventivas e de promoção da saúde (ginástica laboral, acompanhamento fisioterapêutico, equipes multiprofissionais).", responsavel: "DPRO", status: "Em andamento" },
+            { id: 15, category: "Infraestrutura", action: "Encaminhamento para as SADS para levantamento de infraeestrutura", prazo: "nov/25", objetivo: "Melhorar o Conforto do ambiente de trabalho (Queixas sobre salas frias ou abafadas, iluminação precária (lâmpadas queimadas), barulho excessivo, infiltrações e até problemas estruturais, computadores, monitores, notebooks, lentidão, travamentos. (Reclamações sobre máquinas antigas, lentas, que prejudicam a produtividade. Também falta de webcams, fones e periféricos adequados.)", responsavel: "DPRO/SAD", status: "A iniciar" },
+            { id: 16, category: "Modalidade de Trabalho", action: "Na definição do novo % de Teletrabalho integral foram escutados todos os órgãos e associações, sendo acatado o pedido de aumento em 5% nas modalidades de teletrabalho, anteiroenmente previstas com 30%e possibilidade de conversão da modalidade integral para semi para abranger um maior número de servidores contemplados com uma modalidade de teletrabalho", prazo: "N/A", objetivo: "Pedido por maior percentual de teletrabalho pleno.", responsavel: "N/A", status: "N/A" }
         ];
         
         const baseData = {
-            "Sistemas e Processos": ["Falta de clareza nas opções da plataforma DFT.", "Melhorias no sistema PGD-e (mais gestores, histórico, menos alertas, substituto incluir afastamentos).", "Melhoria nos Formulários"],
-            "Gestão Institucional e Comunicação": ["Falta de divulgação/visibilidade.", "Proposta de estruturação do atendimento dos serviços", "Comunicação deficiente.", "Sugestão de maior atuação prática."],
-            "Modalidade de Trabalho": ["POD"],
-            "Saúde, Qualidade de Vida e Bem-estar no Trabalho": ["Ergonomia", "Sugestão de maior atuação prática.", "Problema de segurança.", "Equipamentos de informática"],
-            "Capacitação e Desenvolvimento Profissional": ["Conforto ambiental", "Capacitação sem valor agregado.", "Preferência por interação vivo.", "Desestímulo à qualificação.", "Gestão ineficiente de prazos.", "Sobrecarga inviabiliza participação em ações e capacitação"],
-            "Acesso às oportunidades": ["Falta descentralização.", "Terceirizados não têm acesso às capacitações.", "Campanhas de vacinação apenas nas capitais."],
-            "Outros": ["Impacta diretamente a execução do trabalho.", "Impacto direto na saúde e motivação.", "Sensação de insegurança.", "Perda de direitos básicos.", "Queixa estrutural.", "Crítica ao excesso/abuso de fiscais.", "Impacto social"],
-            "Valorização do Servidor e Carreira": ["Plano de Carreira", "Incentivos"]
+            "Sistemas e Processos": ["Dar clareza às opções do DFT e apoiar todos os órgãos SIPEC na utilização do SISDIP.", "Melhorar usabilidade, reduzir sobrecarga de alertas e ampliar funcionalidades estratégicas do PGD-e.", "Garantir acessibilidade e padronização dos formulários de serviços."],
+            "Comunicação e Serviços da DPRO": ["Ampliar a divulgação e o entendimento sobre os serviços da DPRO, promovendo maior transparência e engajamento.", "Criar e implementar plano de comunicação em parceria com a ASCOM para envio de conteúdos curtos e informativos.", "Melhorar a gestão do conhecimento e a manualização dos serviços ofertados."],
+            "Acesso às oportunidades de Saúde, Qualidade de Vida e Bem-estar no Trabalho": ["Promover saúde mental, inclusão e apoio efetivo aos servidores.", "Ampliar o alcance das campanhas de vacinação para além das capitais, garantindo acesso mais equitativo."],
+            "Capacitação e Desenvolvimento Profissional": ["Adequar as modalidades dos cursos ofertados", "Melhorar aspectos de percepção de qualidade de vid dos servidores como \"Recebimento de serviços no fim de semana com prazo para segunda\"", "Superar dificuldade identificada de \"Volume de serviço impede acompanhar atividades do Desenvolvimento Profissional\""],
+            "Valorização do Servidor e Carreira": ["Demanda por plano de carreira com valorização da titulação", "Pedidos por incentivos financeiros, gratificações e estímulos que motivem servidores a buscar capacitação"],
+            "Ergonomia": ["Percepção de falta de atenção institucional, ausência de divulgação de políticas de ergonomia e demora no atendimento às demandas. Sugestões para ações preventivas e de promoção da saúde (ginástica laboral, acompanhamento fisioterapêutico, equipes multiprofissionais)."],
+            "Infraestrutura": ["Melhorar o Conforto do ambiente de trabalho (Queixas sobre salas frias ou abafadas, iluminação precária (lâmpadas queimadas), barulho excessivo, infiltrações e até problemas estruturais, computadores, monitores, notebooks, lentidão, travamentos. (Reclamações sobre máquinas antigas, lentas, que prejudicam a produtividade. Também falta de webcams, fones e periféricos adequados.)"],
+            "Modalidade de Trabalho": ["Pedido por maior percentual de teletrabalho pleno."]
         };
-
 
         // --- VARIÁVEIS GLOBAIS DOS GRÁFICOS ---
         let statusChartInstance = null;
         let deadlineChartInstance = null;
+
+        // --- FUNÇÃO UTILITÁRIA DE PARSING ---
+        function parsePrazo(prazoString) {
+            if (!prazoString) return { datePart: '', obsPart: '' };
+            const match = prazoString.match(/^(.*?)\s*\((.*)\)\s*$/);
+            if (match) {
+                return { datePart: match[1].trim(), obsPart: match[2].trim() };
+            }
+            return { datePart: prazoString.trim(), obsPart: '' };
+        }
         
         // --- LÓGICA DAS ABAS ---
         const tabs = [
@@ -215,31 +217,59 @@
         new Chart(ctx, { type: 'bar', data: { labels: categories, datasets: [{ label: 'Nº de Comentários e Sugestões', data: counts, backgroundColor: ['rgba(153, 102, 255, 0.6)','rgba(255, 206, 86, 0.6)','rgba(75, 192, 192, 0.6)','rgba(255, 159, 64, 0.6)','rgba(255, 99, 132, 0.6)','rgba(54, 162, 235, 0.6)', 'rgba(255, 99, 71, 0.6)', 'rgba(60, 179, 113, 0.6)', 'rgba(218, 112, 214, 0.6)'], borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', scales: { x: { beginAtZero: true, title: { display: true, text: 'Número de Ocorrências' } } }, plugins: { legend: { display: false } }, onClick: (e, el) => { if (el.length > 0) openModal(categories[el[0].index]); } } });
 
         // --- LÓGICA DO DASHBOARD ---
+        function parsePrazoToDate(prazoString) {
+            if (!prazoString || prazoString.toLowerCase() === 'n/a') return null;
+            const lowerPrazo = prazoString.toLowerCase();
+            const monthMap = { jan: 0, fev: 1, mar: 2, abr: 3, mai: 4, jun: 5, jul: 6, ago: 7, set: 8, out: 9, nov: 10, dez: 11 };
+            let match = lowerPrazo.match(/(\w+)\/(\d{2})/);
+            if (match) {
+                const month = monthMap[match[1].substring(0, 3)];
+                const year = parseInt(`20${match[2]}`);
+                if (month !== undefined && !isNaN(year)) {
+                    return new Date(year, month + 1, 0); // Último dia do mês
+                }
+            }
+            match = lowerPrazo.match(/^(\d{4})$/);
+            if (match) {
+                const year = parseInt(match[1]);
+                return new Date(year, 11, 31); // Último dia do ano
+            }
+            return null;
+        }
+
         function updateDashboardCharts() {
             // 1. Gráfico de Status
             const statusCounts = planData.reduce((acc, item) => {
-                acc[item.status] = (acc[item.status] || 0) + 1;
+                const status = item.status || "N/A";
+                acc[status] = (acc[status] || 0) + 1;
                 return acc;
             }, {});
+            
+            const statusLabels = Object.keys(statusCounts);
+            const statusData = Object.values(statusCounts);
+            const statusColors = statusLabels.map(label => ({
+                "A iniciar": "#fecaca", "Em andamento": "#fef08a", "Concluído": "#bbf7d0", 
+                "Contínuo": "#bfdbfe", "Planejamento": "#e9d5ff", "N/A": "#e5e7eb"
+            }[label] || '#cccccc'));
 
             const statusCtx = document.getElementById('statusChart').getContext('2d');
             if (statusChartInstance) statusChartInstance.destroy();
             statusChartInstance = new Chart(statusCtx, {
                 type: 'doughnut',
-                data: {
-                    labels: Object.keys(statusCounts),
-                    datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#bfdbfe', '#fef08a', '#fecaca', '#bbf7d0' ], borderColor: ['#93c5fd', '#facc15', '#f87171', '#4ade80'], borderWidth: 1 }]
-                },
+                data: { labels: statusLabels, datasets: [{ data: statusData, backgroundColor: statusColors, borderWidth: 1 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
             });
 
             // 2. Gráfico de Linha de Prazos
             const deadlineCountsByMonth = {};
             planData.forEach(item => {
-                if (item.status !== 'Concluído' && item.prazo && item.prazo !== 'N/A') {
-                    const prazoDate = new Date(item.prazo + 'T00:00:00-03:00');
-                    const monthKey = `${prazoDate.getFullYear()}-${(prazoDate.getMonth() + 1).toString().padStart(2, '0')}`;
-                    deadlineCountsByMonth[monthKey] = (deadlineCountsByMonth[monthKey] || 0) + 1;
+                if (item.status !== 'Concluído' && item.status !== 'N/A') {
+                    const { datePart } = parsePrazo(item.prazo);
+                    const prazoDate = parsePrazoToDate(datePart);
+                    if(prazoDate) {
+                        const monthKey = `${prazoDate.getFullYear()}-${(prazoDate.getMonth() + 1).toString().padStart(2, '0')}`;
+                        deadlineCountsByMonth[monthKey] = (deadlineCountsByMonth[monthKey] || 0) + 1;
+                    }
                 }
             });
 
@@ -269,34 +299,44 @@
             tbody.innerHTML = '';
             planData.forEach(item => {
                 const tr = document.createElement('tr');
-                const statusClass = { "A iniciar": "status-A-iniciar", "Em andamento": "status-Em-andamento", "Concluído": "status-Concluído", "Contínuo": "status-Contínuo" }[item.status] || "";
+                const statusKey = item.status === "N/A" ? "NA" : item.status;
+                const statusClass = { "A iniciar": "status-A-iniciar", "Em andamento": "status-Em-andamento", "Concluído": "status-Concluído", "Contínuo": "status-Contínuo", "Planejamento": "status-Planejamento", "N/A": "status-NA" }[item.status] || "";
                 tr.className = statusClass;
 
                 const tdPrazo = document.createElement('td');
                 tdPrazo.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-800';
-                if (item.prazo !== 'N/A') {
-                    const prazoInput = document.createElement('input');
-                    prazoInput.type = 'date'; prazoInput.value = item.prazo;
-                    prazoInput.className = 'border-gray-300 rounded-md shadow-sm w-full';
-                    prazoInput.onchange = () => handlePrazoChange(item.id, prazoInput.value);
-                    tdPrazo.appendChild(prazoInput);
-                } else { tdPrazo.textContent = "N/A"; }
+                
+                const { datePart, obsPart } = parsePrazo(item.prazo);
 
+                const prazoInput = document.createElement('input');
+                prazoInput.type = 'text'; 
+                prazoInput.value = datePart;
+                prazoInput.className = 'border-gray-300 rounded-md shadow-sm w-full';
+                prazoInput.onchange = () => handlePrazoChange(item.id, prazoInput.value, obsPart);
+                tdPrazo.appendChild(prazoInput);
+
+                if (obsPart) {
+                    const obsSpan = document.createElement('span');
+                    obsSpan.className = 'text-xs text-gray-500 block mt-1 italic';
+                    obsSpan.textContent = `(${obsPart})`;
+                    tdPrazo.appendChild(obsSpan);
+                }
+                
                 const tdStatus = document.createElement('td');
                 tdStatus.className = 'px-6 py-4 whitespace-nowrap';
                 const statusSelect = document.createElement('select');
                 statusSelect.className = 'border-gray-300 rounded-md shadow-sm w-full';
-                ['A iniciar', 'Em andamento', 'Concluído', 'Contínuo'].forEach(status => {
+                ['A iniciar', 'Em andamento', 'Concluído', 'Contínuo', 'Planejamento', 'N/A'].forEach(status => {
                     const option = document.createElement('option');
                     option.value = status; option.textContent = status;
                     if (item.status === status) option.selected = true;
                     statusSelect.appendChild(option);
                 });
-                if (item.prazo === 'N/A') statusSelect.disabled = true;
+                if (item.status === 'N/A') statusSelect.disabled = true;
                 statusSelect.onchange = () => handleStatusChange(item.id, statusSelect.value);
                 tdStatus.appendChild(statusSelect);
                 
-                tr.innerHTML = `<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.category}</td><td class="px-6 py-4 whitespace-normal text-sm text-gray-800">${item.action}</td><td class="px-6 py-4 whitespace-normal text-sm text-gray-800">${item.levantamento}</td>`;
+                tr.innerHTML = `<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.category}</td><td class="px-6 py-4 whitespace-normal text-sm text-gray-800">${item.action}</td><td class="px-6 py-4 whitespace-normal text-sm text-gray-800">${item.objetivo}</td><td class="px-6 py-4 whitespace-normal text-sm text-gray-800">${item.responsavel}</td>`;
                 tr.append(tdPrazo, tdStatus);
                 tbody.appendChild(tr);
             });
@@ -310,11 +350,16 @@
                 updateDashboardCharts();
             }
         }
-        function handlePrazoChange(id, newPrazo) {
+
+        function handlePrazoChange(id, newDatePart, originalObsPart) {
             const item = planData.find(i => i.id === id);
             if (item) {
-                 item.prazo = newPrazo;
-                 updateDashboardCharts();
+                let newPrazo = newDatePart.trim();
+                if (originalObsPart) {
+                    newPrazo = `${newPrazo} (${originalObsPart})`;
+                }
+                item.prazo = newPrazo;
+                updateDashboardCharts();
             }
         }
 
