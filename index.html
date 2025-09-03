@@ -97,15 +97,15 @@
                     <div class="flex items-center"><span class="h-4 w-4 block rounded-full bg-gray-200 mr-2 border border-gray-300"></span><span class="text-sm text-gray-700">N/A</span></div>
                 </div>
                  <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200 table-fixed">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoria</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ação Proposta</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Objetivo</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Responsável</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prazo</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[15%]">Categoria</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[25%]">Ação Proposta</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[25%]">Objetivo</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[15%]">Responsável</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[10%]">Prazo</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[10%]">Status</th>
                             </tr>
                         </thead>
                         <tbody id="action-plan-tbody" class="bg-white divide-y divide-gray-200">
@@ -182,7 +182,7 @@
         let statusChartInstance = null;
         let deadlineChartInstance = null;
 
-        // --- FUNÇÃO UTILITÁRIA DE PARSING ---
+        // --- FUNÇÕES UTILITÁRIAS DE PARSING DE DATA ---
         function parsePrazo(prazoString) {
             if (!prazoString) return { datePart: '', obsPart: '' };
             const match = prazoString.match(/^(.*?)\s*\((.*)\)\s*$/);
@@ -190,6 +190,40 @@
                 return { datePart: match[1].trim(), obsPart: match[2].trim() };
             }
             return { datePart: prazoString.trim(), obsPart: '' };
+        }
+
+        function formatPrazoToInputDate(prazoString) {
+            if (!prazoString) return null;
+            let match = prazoString.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+            if (match) return prazoString;
+
+            const lowerPrazo = prazoString.toLowerCase();
+            const monthMap = { jan: '01', fev: '02', mar: '03', abr: '04', mai: '05', jun: '06', jul: '07', ago: '08', set: '09', out: '10', nov: '11', dez: '12' };
+            
+            match = lowerPrazo.match(/(\w+)\/(\d{2})/);
+            if (match) {
+                const month = monthMap[match[1].substring(0, 3)];
+                const year = `20${match[2]}`;
+                if (month) {
+                    const lastDay = new Date(year, parseInt(month), 0).getDate();
+                    return `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
+                }
+            }
+            
+            match = lowerPrazo.match(/^(\d{4})$/);
+            if (match) return `${match[1]}-12-31`;
+            
+            return null;
+        }
+
+        function parsePrazoToDate(prazoString) {
+            const inputDate = formatPrazoToInputDate(prazoString);
+            if (inputDate) {
+                 // Adjust for timezone issues by creating date in UTC
+                const [year, month, day] = inputDate.split('-').map(Number);
+                return new Date(Date.UTC(year, month - 1, day));
+            }
+            return null;
         }
         
         // --- LÓGICA DAS ABAS ---
@@ -217,26 +251,6 @@
         new Chart(ctx, { type: 'bar', data: { labels: categories, datasets: [{ label: 'Nº de Comentários e Sugestões', data: counts, backgroundColor: ['rgba(153, 102, 255, 0.6)','rgba(255, 206, 86, 0.6)','rgba(75, 192, 192, 0.6)','rgba(255, 159, 64, 0.6)','rgba(255, 99, 132, 0.6)','rgba(54, 162, 235, 0.6)', 'rgba(255, 99, 71, 0.6)', 'rgba(60, 179, 113, 0.6)', 'rgba(218, 112, 214, 0.6)'], borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', scales: { x: { beginAtZero: true, title: { display: true, text: 'Número de Ocorrências' } } }, plugins: { legend: { display: false } }, onClick: (e, el) => { if (el.length > 0) openModal(categories[el[0].index]); } } });
 
         // --- LÓGICA DO DASHBOARD ---
-        function parsePrazoToDate(prazoString) {
-            if (!prazoString || prazoString.toLowerCase() === 'n/a') return null;
-            const lowerPrazo = prazoString.toLowerCase();
-            const monthMap = { jan: 0, fev: 1, mar: 2, abr: 3, mai: 4, jun: 5, jul: 6, ago: 7, set: 8, out: 9, nov: 10, dez: 11 };
-            let match = lowerPrazo.match(/(\w+)\/(\d{2})/);
-            if (match) {
-                const month = monthMap[match[1].substring(0, 3)];
-                const year = parseInt(`20${match[2]}`);
-                if (month !== undefined && !isNaN(year)) {
-                    return new Date(year, month + 1, 0); // Último dia do mês
-                }
-            }
-            match = lowerPrazo.match(/^(\d{4})$/);
-            if (match) {
-                const year = parseInt(match[1]);
-                return new Date(year, 11, 31); // Último dia do ano
-            }
-            return null;
-        }
-
         function updateDashboardCharts() {
             // 1. Gráfico de Status
             const statusCounts = planData.reduce((acc, item) => {
@@ -267,7 +281,7 @@
                     const { datePart } = parsePrazo(item.prazo);
                     const prazoDate = parsePrazoToDate(datePart);
                     if(prazoDate) {
-                        const monthKey = `${prazoDate.getFullYear()}-${(prazoDate.getMonth() + 1).toString().padStart(2, '0')}`;
+                        const monthKey = `${prazoDate.getUTCFullYear()}-${(prazoDate.getUTCMonth() + 1).toString().padStart(2, '0')}`;
                         deadlineCountsByMonth[monthKey] = (deadlineCountsByMonth[monthKey] || 0) + 1;
                     }
                 }
@@ -276,7 +290,7 @@
             const sortedMonths = Object.keys(deadlineCountsByMonth).sort();
             const deadlineLabels = sortedMonths.map(monthKey => {
                 const [year, month] = monthKey.split('-');
-                const monthName = new Date(year, month - 1).toLocaleString('pt-BR', { month: 'short' });
+                const monthName = new Date(Date.UTC(year, month - 1)).toLocaleString('pt-BR', { month: 'short', timeZone: 'UTC' });
                 return `${monthName.charAt(0).toUpperCase() + monthName.slice(1)}/${year.slice(2)}`;
             });
             const deadlineData = sortedMonths.map(monthKey => deadlineCountsByMonth[monthKey]);
@@ -299,22 +313,28 @@
             tbody.innerHTML = '';
             planData.forEach(item => {
                 const tr = document.createElement('tr');
-                const statusKey = item.status === "N/A" ? "NA" : item.status;
                 const statusClass = { "A iniciar": "status-A-iniciar", "Em andamento": "status-Em-andamento", "Concluído": "status-Concluído", "Contínuo": "status-Contínuo", "Planejamento": "status-Planejamento", "N/A": "status-NA" }[item.status] || "";
                 tr.className = statusClass;
 
                 const tdPrazo = document.createElement('td');
-                tdPrazo.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-800';
+                tdPrazo.className = 'px-6 py-4 text-sm text-gray-800 align-top';
                 
                 const { datePart, obsPart } = parsePrazo(item.prazo);
+                const inputDateValue = formatPrazoToInputDate(datePart);
 
-                const prazoInput = document.createElement('input');
-                prazoInput.type = 'text'; 
-                prazoInput.value = datePart;
-                prazoInput.className = 'border-gray-300 rounded-md shadow-sm w-full';
-                prazoInput.onchange = () => handlePrazoChange(item.id, prazoInput.value, obsPart);
-                tdPrazo.appendChild(prazoInput);
-
+                if (inputDateValue) {
+                    const prazoInput = document.createElement('input');
+                    prazoInput.type = 'date'; 
+                    prazoInput.value = inputDateValue;
+                    prazoInput.className = 'border-gray-300 rounded-md shadow-sm w-full';
+                    prazoInput.onchange = () => handlePrazoChange(item.id, prazoInput.value, obsPart);
+                    tdPrazo.appendChild(prazoInput);
+                } else {
+                    const textNode = document.createElement('div');
+                    textNode.textContent = datePart;
+                    tdPrazo.appendChild(textNode);
+                }
+                
                 if (obsPart) {
                     const obsSpan = document.createElement('span');
                     obsSpan.className = 'text-xs text-gray-500 block mt-1 italic';
@@ -323,7 +343,7 @@
                 }
                 
                 const tdStatus = document.createElement('td');
-                tdStatus.className = 'px-6 py-4 whitespace-nowrap';
+                tdStatus.className = 'px-6 py-4 whitespace-normal align-top';
                 const statusSelect = document.createElement('select');
                 statusSelect.className = 'border-gray-300 rounded-md shadow-sm w-full';
                 ['A iniciar', 'Em andamento', 'Concluído', 'Contínuo', 'Planejamento', 'N/A'].forEach(status => {
@@ -336,7 +356,7 @@
                 statusSelect.onchange = () => handleStatusChange(item.id, statusSelect.value);
                 tdStatus.appendChild(statusSelect);
                 
-                tr.innerHTML = `<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.category}</td><td class="px-6 py-4 whitespace-normal text-sm text-gray-800">${item.action}</td><td class="px-6 py-4 whitespace-normal text-sm text-gray-800">${item.objetivo}</td><td class="px-6 py-4 whitespace-normal text-sm text-gray-800">${item.responsavel}</td>`;
+                tr.innerHTML = `<td class="px-6 py-4 whitespace-normal text-sm font-medium text-gray-900 align-top">${item.category}</td><td class="px-6 py-4 whitespace-normal text-sm text-gray-800 align-top">${item.action}</td><td class="px-6 py-4 whitespace-normal text-sm text-gray-800 align-top">${item.objetivo}</td><td class="px-6 py-4 whitespace-normal text-sm text-gray-800 align-top">${item.responsavel}</td>`;
                 tr.append(tdPrazo, tdStatus);
                 tbody.appendChild(tr);
             });
@@ -351,14 +371,18 @@
             }
         }
 
-        function handlePrazoChange(id, newDatePart, originalObsPart) {
+        function handlePrazoChange(id, newDateISO, originalObsPart) {
             const item = planData.find(i => i.id === id);
             if (item) {
-                let newPrazo = newDatePart.trim();
+                const [y, m, d] = newDateISO.split('-');
+                let formattedDate = `${d}/${m}/${y.slice(2)}`; // Reformat to keep it simple, e.g., 31/03/25
+                
+                let newPrazo = formattedDate;
                 if (originalObsPart) {
                     newPrazo = `${newPrazo} (${originalObsPart})`;
                 }
                 item.prazo = newPrazo;
+                renderActionPlanTable(); // Re-render to show the new simple format
                 updateDashboardCharts();
             }
         }
