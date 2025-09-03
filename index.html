@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gráfico Interativo de Comentários e Sugestões</title>
+    <title>Plano de Ação Interativo DPRO</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,12 +12,13 @@
             font-family: 'Inter', sans-serif;
             background-color: #f4f7f9;
         }
-        #chart-container {
-            position: relative;
-            margin: auto;
-            height: 85vh; /* Aumentado para acomodar mais categorias */
-            width: 90vw;
-            max-width: 900px;
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
         .modal-overlay {
             position: fixed;
@@ -52,167 +53,298 @@
         .modal-overlay.visible .modal-content {
             transform: scale(1);
         }
-        .action-item {
-            border-left: 4px solid #3b82f6;
-            padding-left: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        .action-item:last-child {
-            margin-bottom: 0;
-        }
+        .status-A-iniciar { background-color: #fecaca; } /* red-200 */
+        .status-Em-andamento { background-color: #fef08a; } /* yellow-200 */
+        .status-Concluído { background-color: #bbf7d0; } /* green-200 */
+        .status-Contínuo { background-color: #bfdbfe; } /* blue-200 */
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
-    <div class="w-full max-w-5xl bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+<body class="p-4 sm:p-6">
+    <div class="w-full max-w-7xl mx-auto bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
         <header class="text-center mb-8">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Plano de Ação DPRO 2025</h1>
-            <p class="text-md text-gray-600 mt-2">Clique em uma barra para ver as observações e o plano de ação correspondente.</p>
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Plano de Ação DPRO</h1>
+            <p class="text-md text-gray-600 mt-2">Navegue entre a visão gráfica, o plano de ação e o dashboard de acompanhamento.</p>
         </header>
-        <div id="chart-container">
-            <canvas id="complaintsChart"></canvas>
+
+        <!-- Abas de Navegação -->
+        <div class="flex flex-wrap justify-center border-b border-gray-200 mb-8">
+            <button id="graph-tab" class="tab-button active text-lg font-semibold py-3 px-6 rounded-t-lg -mb-px">Visão Gráfica</button>
+            <button id="plan-tab" class="tab-button text-lg font-semibold py-3 px-6 text-gray-600 rounded-t-lg -mb-px">Plano de Ação</button>
+            <button id="dashboard-tab" class="tab-button text-lg font-semibold py-3 px-6 text-gray-600 rounded-t-lg -mb-px">Dashboard</button>
         </div>
+
+        <!-- Conteúdo das Abas -->
+        <main>
+            <!-- Visão Gráfica -->
+            <div id="graph-view">
+                <p class="text-center text-gray-500 mb-4">Clique em uma barra para ver os comentários e sugestões da categoria.</p>
+                <div id="chart-container" class="relative mx-auto h-[85vh] w-full max-w-4xl">
+                    <canvas id="complaintsChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Visão Plano de Ação -->
+            <div id="plan-view" class="hidden">
+                 <!-- Legenda -->
+                <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-6 p-4 bg-gray-50 rounded-lg">
+                    <div class="flex items-center">
+                        <span class="h-4 w-4 block rounded-full bg-red-200 mr-2 border border-red-300"></span>
+                        <span class="text-sm text-gray-700">A iniciar</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="h-4 w-4 block rounded-full bg-yellow-200 mr-2 border border-yellow-300"></span>
+                        <span class="text-sm text-gray-700">Em andamento</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="h-4 w-4 block rounded-full bg-green-200 mr-2 border border-green-300"></span>
+                        <span class="text-sm text-gray-700">Concluído</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="h-4 w-4 block rounded-full bg-blue-200 mr-2 border border-blue-300"></span>
+                        <span class="text-sm text-gray-700">Contínuo</span>
+                    </div>
+                </div>
+                 <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoria</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ação Proposta</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Levantamento/Objetivo</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prazo</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="action-plan-tbody" class="bg-white divide-y divide-gray-200">
+                            <!-- Linhas da tabela serão inseridas aqui via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+             <!-- Visão Dashboard -->
+            <div id="dashboard-view" class="hidden">
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 p-6 bg-gray-50 rounded-xl">
+                    <div>
+                        <h3 class="text-lg font-semibold text-center text-gray-700 mb-4">Ações por Status</h3>
+                        <div class="h-64 w-full flex items-center justify-center">
+                           <canvas id="statusChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-center text-gray-700 mb-4">Cronograma de Prazos (Ações Pendentes)</h3>
+                        <div class="h-64 w-full">
+                           <canvas id="deadlineChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <!-- Modal para Observações e Plano de Ação -->
+    <!-- Modal para Detalhes da Categoria -->
     <div id="detailsModal" class="modal-overlay">
         <div class="modal-content relative">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl font-bold">&times;</button>
             <h2 id="modalTitle" class="text-2xl font-bold text-gray-800 mb-6"></h2>
-            <div id="modalBody" class="space-y-6">
+            <div id="modalBody" class="space-y-2">
                 <!-- Conteúdo dinâmico aqui -->
             </div>
         </div>
     </div>
 
     <script>
-        // Dados reestruturados para associar cada observação a uma ação específica.
-        const data = {
-            "Outros": [
-                { observation: "Recebimento de serviços no fim de semana com prazo para segunda.", action: "Capacitação de líderes.", prazo: "Até Dezembro/2025" },
-                { observation: "Volume de serviço impede acompanhar atividades do Desenvolvimento Profissional.", action: "Garantir tempo protegido para capacitação (ex.: 2h mensais oficiais) - Conforme consultoria PNUD sobre nova forma de Gestão de Desempenho: Alterar Normativo interno + Preparar sistema + pactuação em planos de trabalho + Sensibilização.", prazo: "Até Junho/2026" },
-                { observation: "Terceirizados sem férias há quase 4 anos.", action: "Analisar e propor melhorias nos contratos de terceirização, garantindo o cumprimento dos direitos trabalhistas.", prazo: "Até Janeiro/2026" },
-                { observation: "Instabilidade de requisitados (emprego público sem segurança).", action: "Analisar e propor melhorias nas condições para requisitados.", prazo: "Até Janeiro/2026" },
-                { observation: "Trabalhadores terceirizados sem direito a férias na mudança de contrato.", action: "Analisar e propor melhorias nos contratos de terceirização, garantindo o cumprimento dos direitos trabalhistas.", prazo: "Até Janeiro/2026" },
-                { observation: "Área meio sofre com baixa remuneração e condições precárias.", action: "Revisar plano de cargos e salários para a área administrativa.", prazo: "Até Março/2026" },
-                { observation: "Plano de saúde inacessível financeiramente.", action: "Estudar viabilidade de novos convênios ou auxílios para planos de saúde.", prazo: "Até Fevereiro/2026" },
-            ],
-            "Saúde, Qualidade de Vida e Bem-estar no Trabalho": [
-                 { observation: "Ergonomia", action: "Realizar diagnóstico das condições de ergonomia, segurança e equipamentos, e elaborar plano de ação com base no diagnóstico.", prazo: "Até Novembro/2025" },
-                 { observation: "Sugestão de maior atuação prática.", action: "Realizar diagnóstico das condições de ergonomia, segurança e equipamentos, e elaborar plano de ação com base no diagnóstico.", prazo: "Até Novembro/2025" },
-                 { observation: "Ergonomia", action: "Realizar diagnóstico das condições de ergonomia, segurança e equipamentos, e elaborar plano de ação com base no diagnóstico.", prazo: "Até Novembro/2025" },
-                 { observation: "Problema de segurança.", action: "Realizar diagnóstico das condições de ergonomia, segurança e equipamentos, e elaborar plano de ação com base no diagnóstico.", prazo: "Até Novembro/2025" },
-                 { observation: "Equipamentos de informática", action: "Realizar diagnóstico das condições de ergonomia, segurança e equipamentos, e elaborar plano de ação com base no diagnóstico.", prazo: "Até Novembro/2025" },
-            ],
-            "Acesso às oportunidades": [
-                { observation: "Desestímulo à qualificação.", action: "Mapear e divulgar de forma centralizada todas as oportunidades. Avaliar a viabilidade de estender as campanhas de saúde para outras localidades.", prazo: "Contínuo" },
-                { observation: "Falta descentralização.", action: "Mapear e divulgar de forma centralizada todas as oportunidades. Avaliar a viabilidade de estender as campanhas de saúde para outras localidades.", prazo: "Contínuo" },
-                { observation: "Falta descentralização.", action: "Mapear e divulgar de forma centralizada todas as oportunidades. Avaliar a viabilidade de estender as campanhas de saúde para outras localidades.", prazo: "Contínuo" },
-                { observation: "Terceirizados não têm acesso às capacitações.", action: "Mapear e divulgar de forma centralizada todas as oportunidades. Avaliar a viabilidade de estender as campanhas de saúde para outras localidades.", prazo: "Contínuo" },
-                { observation: "Campanhas de vacinação apenas nas capitais.", action: "Mapear e divulgar de forma centralizada todas as oportunidades. Avaliar a viabilidade de estender as campanhas de saúde para outras localidades.", prazo: "Contínuo" },
-            ],
-            "Falta de conhecimento sobre a Área": [
-                { observation: "Falta de divulgação/visibilidade.", action: "Criar um plano de comunicação para divulgar as atribuições, serviços e sucessos da área.", prazo: "Até Outubro/2025" },
-                { observation: "Falta de divulgação/visibilidade.", action: "Criar um plano de comunicação para divulgar as atribuições, serviços e sucessos da área.", prazo: "Até Outubro/2025" },
-                { observation: "Falta de divulgação/visibilidade.", action: "Criar um plano de comunicação para divulgar as atribuições, serviços e sucessos da área.", prazo: "Até Outubro/2025" },
-                { observation: "Falta de divulgação/visibilidade.", action: "Criar um plano de comunicação para divulgar as atribuições, serviços e sucessos da área.", prazo: "Até Outubro/2025" },
-            ],
-            "Gestão Institucional e Comunicação": [
-                { observation: "Proposta de estruturação do atendimento dos serviços", action: "Estruturar o catálogo de serviços da área, definindo canais de atendimento, responsáveis e SLAs.", prazo: "Até Novembro/2025" },
-                { observation: "Comunicação deficiente.", action: "Estruturar o catálogo de serviços da área, definindo canais de atendimento, responsáveis e SLAs.", prazo: "Até Novembro/2025" },
-                { observation: "Sugestão de maior atuação prática.", action: "Estruturar o catálogo de serviços da área, definindo canais de atendimento, responsáveis e SLAs.", prazo: "Até Novembro/2025" },
-            ],
-            "Capacitação e Desenvolvimento Profissional": [
-                { observation: "Conforto ambiental", action: "Revisar o processo de levantamento de necessidades de capacitação para alinhá-lo às demandas e ao formato preferido pelas equipes.", prazo: "Até Novembro/2025" },
-                { observation: "Capacitação sem valor agregado.", action: "Revisar o processo de levantamento de necessidades de capacitação para alinhá-lo às demandas e ao formato preferido pelas equipes.", prazo: "Até Novembro/2025" },
-                { observation: "Preferência por interação vivo.", action: "Revisar o processo de levantamento de necessidades de capacitação para alinhá-lo às demandas e ao formato preferido pelas equipes.", prazo: "Até Novembro/2025" },
-            ],
-            "Sistemas e Processos": [
-                 { observation: "Falta de clareza nas opções da plataforma DFT.", action: "Etapa 3 do DFT consiste exatamente em transferir o conhecimento do SISDIP - sistema sob gestão do MGI para todos os órgãos SIPEC. Foi disponibilizado Manual prático, sensibilização, capacitação e plantão de dúvidas. Além disso o acompanhamento do preenchimento dos dados no sistema se estenderá durante todos os meses de 2025. COEPE possui um canal direto com a Equipe do DFT no MGI para sugerir melhorias no sistema (o que já foi feito).", prazo: "Durante todo o ano de 2025" },
-                 { observation: "Melhorias no sistema PGD-e (mais gestores, histórico, menos alertas, substituto incluir afastamentos).", action: "O sistema PGD está passando por reformulação geral - será um novo sistema. Entrega: Desenvolvida a API para envio de dados do PGD-AGU ao MGI: Funcionando. Entregas em desenvolvimento (DIGI/SGE): Módulos: Planejamento Estratégico, Cadeia de Valor, PEE, PPI, TCR, Avaliação do PPI, Avaliação do PEE, Relatório de Resultados, API ao MGI. Em homologação: Planejamento Estratégico, Cadeia de Valor, PEE, PPI, TCR, Avaliação do PPI. A desenvolver: Avaliação do PEE.", prazo: "Conclusão em 2026" },
-            ],
-            "Valorização do Servidor e Carreira": [
-                 { observation: "Carreira e progressão: demanda por plano de carreira com valorização da titulação", action: "Realizar estudo para a reestruturação do plano de carreira, incluindo a valorização da titulação.", prazo: "Até Março/2026" },
-                 { observation: "Reconhecimento: pedidos por incentivos financeiros, gratificações e estímulos que motivem o servidor a buscar capacitação.", action: "Realizar estudo para a reestruturação do plano de carreira, incluindo a valorização da titulação.", prazo: "Até Março/2026" },
-            ],
-            "Modalidade de Trabalho": [
-                { observation: "POD", action: "Analisar os resultados e feedbacks da modalidade de trabalho (POD) para identificar pontos de melhoria.", prazo: "Até Outubro/2025" }
-            ],
-            "Ação Não Aplicável": [
-                { observation: "Dificuldade para resolver problemas em sistemas de cálculos; suporte ineficiente (Rio e Brasília não resolvem).", action: "Este item foi classificado como não aplicável para ação direta, pois depende de fatores externos. Recomenda-se monitoramento contínuo.", prazo: "N/A" },
-                { observation: "Rigor maior na fiscalização de contratos de terceirizados.", action: "Este item foi classificado como não aplicável para ação direta, pois se refere a uma percepção sobre a fiscalização. Recomenda-se comunicação clara sobre os processos.", prazo: "N/A" }
-            ]
+        // --- ESTRUTURA DE DADOS ---
+        const planData = [
+            { id: 1, category: "Sistemas e Processos", action: "DFT – melhorias no sistema (Etapa 3 / SISDIP) • Transferência do conhecimento do SISDIP para todos os órgãos SIPEC. • Manual prático, sensibilização, capacitação e plantão de dúvidas. • Acompanhamento mensal do preenchimento dos dados em 2025. • Canal direto COEPE/MGI para sugestões de melhorias.", levantamento: "Dar clareza às opções do DFT e apoiar todos os órgãos SIPEC na utilização do SISDIP.", prazo: "2025-12-31", status: "Em andamento" },
+            { id: 2, category: "Sistemas e Processos", action: "PGD – reformulação geral do sistema PGD-e • API para envio de dados ao MGI já desenvolvida. • Entregas em desenvolvimento (DIGI/SGE). • Pontos de atenção: 34 evolutivas mapeadas pendentes.", levantamento: "Melhorar usabilidade, reduzir sobrecarga de alertas e ampliar funcionalidades estratégicas do PGD-e.", prazo: "2025-12-31", status: "Em andamento" },
+            { id: 3, category: "Sistemas e Processos", action: "Mapeamento dos formulários de solicitação de serviços • Opção 1: Mapear os formulários para identificar os serviços mais solicitados. • Opção 2: Adotar uma plataforma de mercado para gestão de serviços.", levantamento: "Melhorar o sistema de formulários para torná-lo mais inteligente, ágil e baseado em dados.", prazo: "2025-11-01", status: "A iniciar" },
+            { id: 4, category: "Gestão Institucional e Comunicação", action: "Aprimorar a divulgação das atividades da área de gestão de pessoas e promover a transparência dos processos.", levantamento: "A área de gestão de pessoas é pouco conhecida, com baixa visibilidade de suas ações e falta de comunicação sobre o andamento dos processos.", prazo: "2025-11-01", status: "A iniciar" },
+            { id: 5, category: "Gestão Institucional e Comunicação", action: "Revisar e fortalecer a comunicação institucional sobre ergonomia, via boletins, redes internas e treinamentos periódicos. Produção e oferta de microlearning com vídeos curtos.", levantamento: "Percepção de falta de atenção institucional, ausência de divulgação de políticas de ergonomia e demora no atendimento às demandas.", prazo: "2025-11-01", status: "Em andamento" },
+            { id: 6, category: "Infraestrutura", action: "Encaminhamento para as SADS para levantamento de infraestrutura", levantamento: "Melhorar o Conforto do ambiente de trabalho (salas, iluminação, equipamentos, etc).", prazo: "2025-11-01", status: "A iniciar" },
+            { id: 7, category: "Modalidade de Trabalho", action: "Na definição do novo % de Teletrabalho integral foram escutados todos os órgãos e associações, sendo acatado o pedido de aumento em 5% nas modalidades.", levantamento: "Pedido por maior flexibilidade na modalidade de trabalho e ampliação do teletrabalho.", prazo: "N/A", status: "Concluído" },
+            { id: 8, category: "Capacitação e Desenvolvimento Profissional", action: "Capacitação de líderes", levantamento: "Capacitar gestores para liderar remotamente, com foco em comunicação, gestão de desempenho e bem-estar da equipe.", prazo: "2025-06-30", status: "A iniciar" },
+            { id: 9, category: "Capacitação e Desenvolvimento Profissional", action: "Garantir tempo protegido para capacitação (ex.: 2h mensais oficiais) - Alterar Normativo interno + Preparar sistema + pactuação em planos de trabalho + Sensibilização", levantamento: "Equilibrar sobrecarga de trabalho e desenvolvimento, incentivando a participação em capacitações.", prazo: "2025-12-31", status: "A iniciar" },
+            { id: 10, category: "Valorização do Servidor e Carreira", action: "Atuação em conjunto com SGCS", levantamento: "Estruturar plano de carreira que valorize a titulação.", prazo: "N/A", status: "Contínuo" },
+            { id: 11, category: "Valorização do Servidor e Carreira", action: "Atuação em conjunto com SGCS", levantamento: "Criar incentivos financeiros e gratificações que motivem a busca por capacitação.", prazo: "N/A", status: "Contínuo" },
+            { id: 12, category: "Saúde, Qualidade de Vida e Bem-estar no Trabalho", action: "Campanhas de vacinação", levantamento: "Ampliar o acesso às campanhas de vacinação, descentralizando a oferta para além das capitais.", prazo: "N/A", status: "Contínuo" },
+            { id: 13, category: "Outros", action: "Atuação em conjunto com SGCS", levantamento: "Buscar alternativas para tornar o plano de saúde mais acessível aos servidores.", prazo: "N/A", status: "Contínuo" },
+            { id: 14, category: "Outros", action: "Avaliação da questão junto à CONJUR/MGI", levantamento: "Analisar a questão das férias de terceirizados na mudança de contrato para evitar a perda de direitos.", prazo: "2025-10-31", status: "Em andamento" },
+            { id: 15, category: "Outros", action: "Apoio à fiscalização dos contratos", levantamento: "Assegurar o cumprimento dos direitos dos terceirizados, incluindo férias e condições de trabalho.", prazo: "N/A", status: "Contínuo" },
+            { id: 16, category: "Outros", action: "Apresentação dos canais de denúncia (Ouvidoria)", levantamento: "Oferecer um canal seguro para relatar possíveis abusos ou excessos por parte de fiscais.", prazo: "N/A", status: "Contínuo" }
+        ];
+        
+        const baseData = {
+            "Sistemas e Processos": ["Falta de clareza nas opções da plataforma DFT.", "Melhorias no sistema PGD-e (mais gestores, histórico, menos alertas, substituto incluir afastamentos).", "Melhoria nos Formulários"],
+            "Gestão Institucional e Comunicação": ["Falta de divulgação/visibilidade.", "Proposta de estruturação do atendimento dos serviços", "Comunicação deficiente.", "Sugestão de maior atuação prática."],
+            "Modalidade de Trabalho": ["POD"],
+            "Saúde, Qualidade de Vida e Bem-estar no Trabalho": ["Ergonomia", "Sugestão de maior atuação prática.", "Problema de segurança.", "Equipamentos de informática"],
+            "Capacitação e Desenvolvimento Profissional": ["Conforto ambiental", "Capacitação sem valor agregado.", "Preferência por interação vivo.", "Desestímulo à qualificação.", "Gestão ineficiente de prazos.", "Sobrecarga inviabiliza participação em ações e capacitação"],
+            "Acesso às oportunidades": ["Falta descentralização.", "Terceirizados não têm acesso às capacitações.", "Campanhas de vacinação apenas nas capitais."],
+            "Outros": ["Impacta diretamente a execução do trabalho.", "Impacto direto na saúde e motivação.", "Sensação de insegurança.", "Perda de direitos básicos.", "Queixa estrutural.", "Crítica ao excesso/abuso de fiscais.", "Impacto social"],
+            "Valorização do Servidor e Carreira": ["Plano de Carreira", "Incentivos"]
         };
 
-        const categories = Object.keys(data);
-        const counts = categories.map(cat => data[cat].length);
 
-        const ctx = document.getElementById('complaintsChart').getContext('2d');
-        const complaintsChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: categories,
-                datasets: [{
-                    label: 'Nº de Comentários e Sugestões',
-                    data: counts,
-                    backgroundColor: ['rgba(153, 102, 255, 0.6)','rgba(255, 206, 86, 0.6)','rgba(75, 192, 192, 0.6)','rgba(255, 159, 64, 0.6)','rgba(255, 99, 132, 0.6)','rgba(54, 162, 235, 0.6)', 'rgba(255, 99, 71, 0.6)', 'rgba(60, 179, 113, 0.6)', 'rgba(218, 112, 214, 0.6)', 'rgba(128, 128, 128, 0.6)'],
-                    borderColor: ['rgba(153, 102, 255, 1)','rgba(255, 206, 86, 1)','rgba(75, 192, 192, 1)','rgba(255, 159, 64, 1)','rgba(255, 99, 132, 1)','rgba(54, 162, 235, 1)', 'rgba(255, 99, 71, 1)', 'rgba(60, 179, 113, 1)', 'rgba(218, 112, 214, 1)', 'rgba(128, 128, 128, 1)'],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                indexAxis: 'y',
-                scales: { 
-                    x: { beginAtZero: true, title: { display: true, text: 'Número de Ocorrências' } },
-                    y: { ticks: { font: { size: 10 } } }
-                 },
-                plugins: { legend: { display: false } },
-                onClick: (event, elements) => {
-                    if (elements.length > 0) {
-                        const index = elements[0].index;
-                        const category = categories[index];
-                        openModal(category, data[category]);
-                    }
-                }
-            }
-        });
+        // --- VARIÁVEIS GLOBAIS DOS GRÁFICOS ---
+        let statusChartInstance = null;
+        let deadlineChartInstance = null;
         
+        // --- LÓGICA DAS ABAS ---
+        const tabs = [
+            { button: document.getElementById('graph-tab'), view: document.getElementById('graph-view') },
+            { button: document.getElementById('plan-tab'), view: document.getElementById('plan-view') },
+            { button: document.getElementById('dashboard-tab'), view: document.getElementById('dashboard-view') },
+        ];
+
+        tabs.forEach(tab => {
+            tab.button.addEventListener('click', () => {
+                tabs.forEach(t => {
+                    t.view.classList.add('hidden');
+                    t.button.classList.remove('active');
+                });
+                tab.view.classList.remove('hidden');
+                tab.button.classList.add('active');
+            });
+        });
+
+        // --- LÓGICA DO GRÁFICO PRINCIPAL ---
+        const categories = Object.keys(baseData);
+        const counts = categories.map(cat => baseData[cat].length);
+        const ctx = document.getElementById('complaintsChart').getContext('2d');
+        new Chart(ctx, { type: 'bar', data: { labels: categories, datasets: [{ label: 'Nº de Comentários e Sugestões', data: counts, backgroundColor: ['rgba(153, 102, 255, 0.6)','rgba(255, 206, 86, 0.6)','rgba(75, 192, 192, 0.6)','rgba(255, 159, 64, 0.6)','rgba(255, 99, 132, 0.6)','rgba(54, 162, 235, 0.6)', 'rgba(255, 99, 71, 0.6)', 'rgba(60, 179, 113, 0.6)', 'rgba(218, 112, 214, 0.6)'], borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', scales: { x: { beginAtZero: true, title: { display: true, text: 'Número de Ocorrências' } } }, plugins: { legend: { display: false } }, onClick: (e, el) => { if (el.length > 0) openModal(categories[el[0].index]); } } });
+
+        // --- LÓGICA DO DASHBOARD ---
+        function updateDashboardCharts() {
+            // 1. Gráfico de Status
+            const statusCounts = planData.reduce((acc, item) => {
+                acc[item.status] = (acc[item.status] || 0) + 1;
+                return acc;
+            }, {});
+
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            if (statusChartInstance) statusChartInstance.destroy();
+            statusChartInstance = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(statusCounts),
+                    datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#fecaca', '#fef08a', '#bbf7d0', '#bfdbfe'], borderColor: ['#f87171', '#facc15', '#4ade80', '#93c5fd'], borderWidth: 1 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
+            });
+
+            // 2. Gráfico de Linha de Prazos
+            const deadlineCountsByMonth = {};
+            planData.forEach(item => {
+                if (item.status !== 'Concluído' && item.prazo && item.prazo !== 'N/A') {
+                    const prazoDate = new Date(item.prazo + 'T00:00:00-03:00');
+                    const monthKey = `${prazoDate.getFullYear()}-${(prazoDate.getMonth() + 1).toString().padStart(2, '0')}`;
+                    deadlineCountsByMonth[monthKey] = (deadlineCountsByMonth[monthKey] || 0) + 1;
+                }
+            });
+
+            const sortedMonths = Object.keys(deadlineCountsByMonth).sort();
+            const deadlineLabels = sortedMonths.map(monthKey => {
+                const [year, month] = monthKey.split('-');
+                const monthName = new Date(year, month - 1).toLocaleString('pt-BR', { month: 'short' });
+                return `${monthName.charAt(0).toUpperCase() + monthName.slice(1)}/${year.slice(2)}`;
+            });
+            const deadlineData = sortedMonths.map(monthKey => deadlineCountsByMonth[monthKey]);
+
+            const deadlineCtx = document.getElementById('deadlineChart').getContext('2d');
+            if (deadlineChartInstance) deadlineChartInstance.destroy();
+            deadlineChartInstance = new Chart(deadlineCtx, {
+                type: 'line',
+                data: {
+                    labels: deadlineLabels,
+                    datasets: [{ label: 'Nº de Ações Pendentes', data: deadlineData, fill: true, backgroundColor: 'rgba(59, 130, 246, 0.2)', borderColor: 'rgba(59, 130, 246, 1)', tension: 0.3 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+            });
+        }
+
+        // --- LÓGICA DA TABELA DO PLANO DE AÇÃO ---
+        const tbody = document.getElementById('action-plan-tbody');
+        function renderActionPlanTable() {
+            tbody.innerHTML = '';
+            planData.forEach(item => {
+                const tr = document.createElement('tr');
+                const statusClass = { "A iniciar": "status-A-iniciar", "Em andamento": "status-Em-andamento", "Concluído": "status-Concluído", "Contínuo": "status-Contínuo" }[item.status] || "";
+                tr.className = statusClass;
+
+                const tdPrazo = document.createElement('td');
+                tdPrazo.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-800';
+                if (item.prazo !== 'N/A') {
+                    const prazoInput = document.createElement('input');
+                    prazoInput.type = 'date'; prazoInput.value = item.prazo;
+                    prazoInput.className = 'border-gray-300 rounded-md shadow-sm w-full';
+                    prazoInput.onchange = () => handlePrazoChange(item.id, prazoInput.value);
+                    tdPrazo.appendChild(prazoInput);
+                } else { tdPrazo.textContent = "N/A"; }
+
+                const tdStatus = document.createElement('td');
+                tdStatus.className = 'px-6 py-4 whitespace-nowrap';
+                const statusSelect = document.createElement('select');
+                statusSelect.className = 'border-gray-300 rounded-md shadow-sm w-full';
+                ['A iniciar', 'Em andamento', 'Concluído', 'Contínuo'].forEach(status => {
+                    const option = document.createElement('option');
+                    option.value = status; option.textContent = status;
+                    if (item.status === status) option.selected = true;
+                    statusSelect.appendChild(option);
+                });
+                if (item.prazo === 'N/A') statusSelect.disabled = true;
+                statusSelect.onchange = () => handleStatusChange(item.id, statusSelect.value);
+                tdStatus.appendChild(statusSelect);
+                
+                tr.innerHTML = `<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.category}</td><td class="px-6 py-4 whitespace-normal text-sm text-gray-800">${item.action}</td><td class="px-6 py-4 whitespace-normal text-sm text-gray-800">${item.levantamento}</td>`;
+                tr.append(tdPrazo, tdStatus);
+                tbody.appendChild(tr);
+            });
+        }
+        
+        function handleStatusChange(id, newStatus) {
+            const item = planData.find(i => i.id === id);
+            if (item) {
+                item.status = newStatus;
+                renderActionPlanTable();
+                updateDashboardCharts();
+            }
+        }
+        function handlePrazoChange(id, newPrazo) {
+            const item = planData.find(i => i.id === id);
+            if (item) {
+                 item.prazo = newPrazo;
+                 updateDashboardCharts();
+            }
+        }
+
+        // --- LÓGICA DO MODAL (VISÃO GRÁFICA) ---
         const modal = document.getElementById('detailsModal');
         const modalTitle = document.getElementById('modalTitle');
         const modalBody = document.getElementById('modalBody');
-
-        function openModal(category, items) {
-            modalTitle.textContent = category;
-            modalBody.innerHTML = ''; // Limpa o conteúdo anterior
-
-            items.forEach(item => {
-                const actionText = item.action.replace(/\n/g, '<br>');
-
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'action-item';
-
-                itemDiv.innerHTML = `
-                    <p class="text-gray-600 mb-2">${item.observation}</p>
-                    <div class="bg-gray-50 p-3 rounded-lg">
-                        <p class="text-gray-800 font-semibold"><strong>💡 Plano de Ação:</strong> ${actionText}</p>
-                        <p class="text-green-700 font-semibold mt-2"><strong>🕒 Prazo:</strong> ${item.prazo}</p>
-                    </div>
-                `;
-                modalBody.appendChild(itemDiv);
-            });
-            
+        function openModal(category) {
+            const observations = baseData[category] || [];
+            modalTitle.textContent = `Comentários e Sugestões: ${category}`;
+            modalBody.innerHTML = '';
+            if (observations.length > 0) {
+                const ul = document.createElement('ul');
+                ul.className = 'list-disc list-inside space-y-2 text-gray-700';
+                observations.forEach(obs => {
+                    const li = document.createElement('li');
+                    li.textContent = obs;
+                    ul.appendChild(li);
+                });
+                modalBody.appendChild(ul);
+            } else { modalBody.innerHTML = '<p class="text-gray-500">Nenhum item encontrado.</p>'; }
             modal.classList.add('visible');
         }
+        function closeModal() { modal.classList.remove('visible'); }
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
-        function closeModal() {
-            modal.classList.remove('visible');
-        }
-
-        modal.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                closeModal();
-            }
+        // --- INICIALIZAÇÃO ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderActionPlanTable();
+            updateDashboardCharts();
         });
     </script>
 </body>
